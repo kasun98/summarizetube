@@ -18,7 +18,7 @@ SummarizeTube harnesses AI to streamline video content consumption by generating
 - **Streamlit**: User interface and handling inputs.
 - **YouTube Transcript API**: Fetches video transcripts.
 - **Google Gemini Pro Model**: Generates summaries and powers the chat bot.
-- **Plotly**: Visualizes wordclouds.
+- **Wordcloud**: Visualizes wordclouds.
 
 ## Performance and Impact
 SummarizeTube automates YouTube video summarization, saving users time while providing essential information efficiently. Early user feedback highlights its simplicity and effectiveness.
