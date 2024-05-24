@@ -96,7 +96,7 @@ if st.button("Summarize"):
     if transcript_text:
         summary=generate_gemini_content(transcript_text,prompt)
         st.markdown("### Summary of the video:")
-        image_buf = word_cloud(summary)
+        image_buf = word_cloud(transcript_text)
         st.image(image_buf, use_column_width=True)
         st.write(summary)
 
