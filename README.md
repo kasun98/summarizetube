@@ -31,5 +31,4 @@ SummarizeTube represents a significant step forward in video content summarizati
 
 ---
 
-© 2024 [Your Name](https://github.com/yourusername/yourrepository)
 
