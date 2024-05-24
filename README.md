@@ -2,6 +2,7 @@
 
 **SummarizeTube** is an innovative web application designed to provide concise summaries of YouTube video transcripts. Leveraging AI technologies, it simplifies the consumption of video content.
 ![Screenshot (139)](https://github.com/kasun98/summarizetube/assets/63708260/2bb11f96-4643-4aed-b7c5-d86a779d5bf8)
+![image](https://github.com/kasun98/summarizetube/assets/63708260/3a6ffc65-b473-4ba9-9252-09d6da20ad3c)
 ![Screenshot (140)](https://github.com/kasun98/summarizetube/assets/63708260/35476c30-1f3a-4ed6-8d7d-ed4f38602d8c)
 
 ## Vision
