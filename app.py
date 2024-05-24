@@ -1,10 +1,12 @@
 import os
 import streamlit as st
-from wordcloud import WordCloud
+from wordcloud import WordCloud, STOPWORDS
 import matplotlib.pyplot as plt
 from io import BytesIO
 import numpy as np
+import PIL
 from PIL import Image, ImageDraw
+import base64
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -50,8 +52,11 @@ def generate_gemini_content(transcript_text,prompt):
     response=model.generate_content(prompt+transcript_text)
     return response.text
 
+wc_mask = np.array(PIL.Image.open('ytb.png'))
+
+
 def word_cloud(word_list):
-    wordcloud = WordCloud(width=1200, height=800, background_color='white', colormap='viridis', random_state=42).generate(word_list)
+    wordcloud = WordCloud(stopwords=STOPWORDS, mask=wc_mask, width=1200, height=800, background_color='white', colormap='viridis', random_state=42).generate(word_list)
     fig, ax = plt.subplots(figsize=(12, 8))
     ax.imshow(wordcloud, interpolation='bilinear')
     ax.axis('off')
@@ -95,6 +100,8 @@ if st.button("Summarize"):
         st.image(image_buf, use_column_width=True)
         st.write(summary)
 
+st.markdown("<br><br>", unsafe_allow_html=True)
+
 # Initialize session state for chat history if not already done
 if 'chat_history' not in st.session_state:
     st.session_state.chat_history = []
@@ -109,65 +116,64 @@ chat_css = """
     max-width: 700px;
     margin: auto;
     padding: 10px;
-    border-radius: 10px;
-    background-color: #f1f1f1;
+    border-radius: 15px;
+    background-color: #ffffff;
     transition: background-color 1s ease, color 1s ease;
     overflow-y: auto;
-    height: 400px;
+    height: 300px;
     border: 0px solid #ccc;
 }
-.chat-box:hover {
-    background-color: #A7F5A4; /* Darker Green */
-    color: black;
-}
+
 .message {
     padding: 10px;
     margin: 10px 0;
-    border-radius: 10px;
+    border-radius: 15px;
     
 }
+
 .user-message {
     background-color: #dcf8c6;
+    transition: background-color 1s ease, color 1s ease;
     text-align: right;
+    border-radius: 15px;
+}
+.user-message:hover {
+    background-color: #ABEBC6; /* Darker Green */
+    color: black;
 }
 .bot-message {
-    background-color: #fff;
+    background-color: #FDEDEC;
+    transition: background-color 1s ease, color 1s ease;
     text-align: left;
 }
-.button {
-    background-color: #4CAF50; /* Green */
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    transition-duration: 0.4s;
-    cursor: pointer;
-    border-radius: 8px;
+.bot-message:hover {
+    background-color: #F5B7B1 ; /* Darker Green */
+    color: black;
 }
-.button:hover {
-    background-color: #45a049; /* Darker Green */
-    color: white;
-}
+
 </style>
 """
 
 # Display chat interface
 st.markdown(chat_css, unsafe_allow_html=True)
-st.markdown("#### Ask Me")
-
-
+# Main content inside a transparent box with a border
+st.markdown("""
+<div class="transparent-box" style="
+    border: 1px solid #ccc; 
+    border-radius: 15px; 
+    padding: 10px; 
+    background-color: rgba(255, 255, 255, 0.5);
+">
+    <h4 style="text-align: center;">Ask from AI Bot</h4>
+""", unsafe_allow_html=True)
 
 # Display the chat history
-chat_history_str = '<div class="chat-box">'
+chat_history_str = '<div class="chat-box" style="max-height: 300px; overflow-y: auto;">'
 for message in st.session_state.chat_history:
     if message["role"] == "user":
-        chat_history_str += f'<div class="message user-message"><b>You:</b> {message["text"]}</div>'
+        chat_history_str += f'<div class="message user-message" style="margin-bottom: 10px;"><b>You:</b> {message["text"]}</div>'
     else:
-        chat_history_str += f'<div class="message bot-message"><b>Bot:</b> {message["text"]}</div>'
+        chat_history_str += f'<div class="message bot-message" style="margin-bottom: 10px;"><b>Bot:</b> {message["text"]}</div>'
 chat_history_str += '</div>'
 st.markdown(chat_history_str, unsafe_allow_html=True)
 
@@ -182,7 +188,39 @@ if submit and inp:
     # Add user query and model response to the chat history
     st.session_state.chat_history.append({"role": "user", "text": inp})
     for chunk in response:
-        st.session_state.chat_history.append({"role": "bot", "text": chunk.text})
+        chunk_text = chunk.text
+    st.session_state.chat_history.append({"role": "bot", "text": chunk_text})
+    
     st.session_state.input_key += 1
-
     st.rerun()
+
+st.markdown("</div>", unsafe_allow_html=True)
+
+# Footer HTML and CSS
+footer_html = """
+    <style>
+    .footer {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        background-color: #f1f1f1;
+        transition: background-color 2s ease, color 2s ease;
+        color: #000;
+        text-align: center;
+        padding: 7px;
+        font-size: 14px;
+        border-top: 0px solid #e1e1e1;
+    }
+    .footer:hover {
+        background-color: #000000 ; 
+        color: white;
+    }
+    </style>
+    <div class="footer">
+        <p>© 2024 SummarizeTube | <a href="https://github.com/kasun98/summarizetube" target="_blank">GitHub</a></p>
+    </div>
+    """
+
+# Inject the footer HTML and CSS into the Streamlit app
+st.markdown(footer_html, unsafe_allow_html=True)
